@@ -110,19 +110,19 @@ function filterDataByCategoryAndYears(prizes,selectedYear,selectedCategory){
 	for(var index3=0;index3<prizes.length;index3++){
 			    var prize=prizes[index3];
 var canAdd=false;
-		if(selectedCategory!=null && selectedCategory!=""){
-			if(prize.category==selectedCategory){
+		if((selectedCategory!=null && selectedCategory!="") && (selectedYear==null || selectedYear=="")){
+			if(prize["category"]==selectedCategory){
 				canAdd=true;
 			}
 		}
-		if(selectedYear!=null && selectedYear!=""){
-			if(prize.year==selectedYear){
+		if((selectedYear!=null && selectedYear!="") && (selectedCategory==null || selectedCategory=="")){
+			if(prize["year"]==selectedYear){
 				canAdd=true;
 			}
 		}
 
 		if(selectedCategory!=null && selectedCategory!="" && selectedYear!=null && selectedYear!=""){
-			if(prize.category==selectedCategory && prize.year==selectedYear){
+			if(prize["category"]==selectedCategory && prize["year"]==selectedYear){
 				canAdd=true;
 			}
 		}

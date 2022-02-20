@@ -1,16 +1,199 @@
 <html>
+	<head>
+		<script type="text/javascript">
+		    callAPI(null,null);
+		    
+                    var categories=[];
+		    function filterPrizeWinners(){
+		var selectedYear=document.getElementById("year").value;
+		var selectedCategory=document.getElementById("category").value;
+		
+		callAPI(selectedYear,selectedCategory);
+
+	}
+
+		    function populateYears(){
+			
+var selectedYear=document.getElementById("year").value;
+		var selectedCategory=document.getElementById("category").value;
+
+			if(selectedYear!=null && selectedYear!=""){
+				return;			
+			}
+			var yearsHtml="<option value=''>ALL</option>";
+			for(index2=1900;index2<=2018;index2++){
+				yearsHtml+="<option value="+index2+">"+index2+"</option>";
+			}
+			
+			document.getElementById("year").innerHTML = yearsHtml;
+
+		    }
+			 function populateCategories(prizes){
+
+			var selectedCategory=document.getElementById("category").value;
+
+			if(selectedCategory!=null && selectedCategory!=""){
+				return;			
+			}
+
+			var categoriesHtml="<option value=''>ALL</option>";
+			for(var index=0;index<prizes.length;index++){
+			    var prize=prizes[index];
+				categoriesHtml+="<option value="+prize.category+">"+prize.category+"</option>";
+			}
+			
+			document.getElementById("category").innerHTML = categoriesHtml;
+
+		    }
+
+		    function showResponse(apiResponse,selectedYear,selectedCategory){
+                        populateYears();
+			apiResponse=JSON.parse(apiResponse);
+			var prizes=apiResponse["prizes"];
+			if(categories.length==0){
+				populateCategories(prizes);
+			}
+                        var prizeWinnersList="";
+			var sNo=1;
+			 
+if((selectedYear!=null && selectedYear!="" ) || (selectedCategory !=null && selectedCategory!="")){
+					
+	prizes=filterDataByCategoryAndYears(prizes,selectedYear,selectedCategory);
+
+				}
+
+			for(var index=0;index<prizes.length;index++){
+			    var prize=prizes[index];
+			    var prizeLaureates=prize.laureates;
+
+			  	
+			    var winners="";
+			    if(prizeLaureates!=null && prizeLaureates.length>0){
+				for(var index1=0;index1<prizeLaureates.length;index1++){
+				    var winnerSurName=prizeLaureates[index1]["surname"]?prizeLaureates[index1]["surname"]:"";
+				    var winnerFirstName=prizeLaureates[index1]["firstname"]?prizeLaureates[index1]["firstname"]:"";
+				    var winnerFullName=winnerSurName+winnerFirstName;
+				winners+=winnerFullName+",";
+                                
+				}
+			    }
+			
+                                 var className="odd_row";
+				  if(sNo%2==0){
+					className="even_row";
+				  }
+
+winners=winners.slice(0, -1)
+
+				    var eachWinnerTr="<tr class='row "+className+"'><td class='row_data'>"+sNo+"</td><td class='row_data'>"+prize.year+"</td><td class='row_data'>"+prize.category+"</td><td class='row_data'>"+winners+"</td></tr>";
+				prizeWinnersList+=eachWinnerTr;
+
+				sNo++;
+
+			}
+			document.getElementById("prize_winners").innerHTML = prizeWinnersList;
+	            }
+		    function callAPI(selectedYear,selectedCategory) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+	if (this.readyState == 4 && this.status == 200) {
+             var response=this.responseText;
+	     showResponse(response,selectedYear,selectedCategory);
+         }
+    };
+    xhttp.open("GET", "http://api.nobelprize.org/v1/prize.json", true);
+xhttp.send();
+}
+
+function filterDataByCategoryAndYears(prizes,selectedYear,selectedCategory){
+	let filteredPrizes=[];
+	for(var index3=0;index3<prizes.length;index3++){
+			    var prize=prizes[index3];
+var canAdd=false;
+		if(selectedCategory!=null && selectedCategory!=""){
+			if(prize.category==selectedCategory){
+				canAdd=true;
+			}
+		}
+		if(selectedYear!=null && selectedYear!=""){
+			if(prize.year==selectedYear){
+				canAdd=true;
+			}
+		}
+
+		if(selectedCategory!=null && selectedCategory!="" && selectedYear!=null && selectedYear!=""){
+			if(prize.category==selectedCategory && prize.year==selectedYear){
+				canAdd=true;
+			}
+		}
+
+		if(canAdd){
+			filteredPrizes.push(prize);
+		}
+	}
+	return filteredPrizes;
+}
+
+	
+		</script>
+
+		<style>
+			thead{
+				font-size: 20px;
+    				background-color: lightgreen;
+			}
+			.odd_row{
+				    background-color: aquamarine;
+			}
+			.even_row{
+				background-color: beige;
+			}
+			.row_data{
+			}
+			.row{
+				text-align: center;
+    				font-size: 18px;
+			}
+			caption{
+				    font-size: 25px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    font-weight: 900;
+    color: darkblue;
+			}
+		</style>
+	</head>
 	<body>
-		<table border="1" cellpadding="1" style="width:50%;margin:0 auto">
+	      <div style="margin:0 auto;max-height:500px;overflow-y:auto">
+		<div>
+			<select id="year">
+			</select>
+			<select id="category">
+			</select>
+			<input type="button" value="Fetch Winners" onClick="filterPrizeWinners()"/>
+		<div>
+		<table border="1" cellpadding="10" width=100%>
+			<caption>Prize Winners</caption>
 			<thead>
 				<tr>
 					<th>
-						Prize
+						S.No
+					</th>
+					<th>
+						Year
+					</th>
+					<th>
+						Category
 					</th>
 					<th>
 						Winner
 					</th>
 				</tr>
 			</thead>
+			<tbody id="prize_winners">
+				
+			</tbody>
 		</table>
+		</div>
 	</body>
 </html>

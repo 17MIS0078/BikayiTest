@@ -37,9 +37,16 @@ var selectedYear=document.getElementById("year").value;
 			}
 
 			var categoriesHtml="<option value=''>ALL</option>";
+                        var categories=[];
+			
 			for(var index=0;index<prizes.length;index++){
-			    var prize=prizes[index];
-				categoriesHtml+="<option value="+prize.category+">"+prize.category+"</option>";
+			    if(!categories.includes(prizes[index]["category"])){
+			    	categories.push(prizes[index]["category"]);
+			  }
+			}
+
+			for(var index=0;index<categories.length;index++){
+			    categoriesHtml+="<option value="+categories[index]+">"+categories[index]+"</option>";
 			}
 			
 			document.getElementById("category").innerHTML = categoriesHtml;
